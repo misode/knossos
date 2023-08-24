@@ -1,6 +1,6 @@
 <template>
   <Modal ref="modal" header="Create a project">
-    <div class="modal-creation universal-labels">
+    <div v-if="!importing" class="modal-creation universal-labels">
       <div class="markdown-body">
         <p>New projects are created as drafts and can be found under your profile page.</p>
       </div>
@@ -50,6 +50,12 @@
         <textarea id="additional-information" v-model="description" maxlength="256" />
       </div>
       <div class="push-right input-group">
+        <div class="external-btn">
+          <button class="iconified-button" @click="beginImport">
+            <LogInIcon />
+            Import from external
+          </button>
+        </div>
         <button class="iconified-button" @click="cancel">
           <CrossIcon />
           Cancel
@@ -60,12 +66,111 @@
         </button>
       </div>
     </div>
+    <div v-else>
+      <div v-if="page === 1" class="modal-import universal-labels">
+        <div class="markdown-body">
+          <p>
+            You can import your project from CurseForge, GitHub, or Modrinth. If you don't have a
+            project on any of these platforms, you can create a new project manually.
+          </p>
+        </div>
+        <div class="iconified-input">
+          <SearchIcon/>
+          <input
+            v-model="search"
+            type="text"
+            placeholder="Search for a project..."
+            autocomplete="off"
+            @input="searchProjects"
+          />
+        </div>
+        <div v-if="selectedProject" class="project-card">
+          <Avatar :src="selectedProject.icon" size="md" />
+          <div class="project-text">
+            <div class="title">{{selectedProject.title}}</div>
+            <div class="description">{{selectedProject.description}}</div>
+          </div>
+        </div>
+        <div v-else class="project-card">
+          <div class="project-text">
+            <div class="title">No project selected</div>
+            <div class="description">Search for a project to import</div>
+          </div>
+        </div>
+        <div class="input-group push-right">
+          <button class="iconified-button" @click="cancel">
+            <CrossIcon />
+            Cancel
+          </button>
+          <button class="iconified-button brand-button" @click="nextPage">
+            <CheckIcon />
+            Continue
+          </button>
+        </div>
+      </div>
+      <div v-else-if="page === 2" class="modal-import universal-labels">
+        <div class="markdown-body">
+          <p>
+            You can import your project from CurseForge, GitHub, or Modrinth. If you don't have a
+            project on any of these platforms, you can create a new project manually.
+          </p>
+        </div>
+        <div class="dependency-map">
+          <div class="entry">
+            <div class="root-project">
+              <Avatar src="null" size="sm" />
+              <div class="title">
+                Spirit
+              </div>
+            </div>
+            <RightArrowIcon/>
+            <div class="translated-project">
+              <div class="iconified-input">
+                <SearchIcon/>
+                <input
+                  v-model="search"
+                  type="text"
+                  placeholder="Search for a project..."
+                  autocomplete="off"
+                  @input="searchProjects"
+                />
+              </div>
+              <div v-if="false" class="mini-project">
+                <Avatar src="null" size="xs" />
+                <div class="text">
+                  Spirit
+                </div>
+              </div>
+              <div v-else class="mini-project">
+                <div class="text">
+                  No project selected
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="input-group push-right">
+          <button class="iconified-button" @click="cancel">
+            <CrossIcon />
+            Cancel
+          </button>
+          <button class="iconified-button brand-button" @click="nextPage">
+            <CheckIcon />
+            Continue
+          </button>
+        </div>
+      </div>
+      <div v-else-if="page === 3" class="modal-import universal-labels">
+
+      </div>
+    </div>
   </Modal>
 </template>
 
 <script>
 import CrossIcon from '~/assets/images/utils/x.svg'
 import CheckIcon from '~/assets/images/utils/right-arrow.svg'
+import { LogInIcon, SearchIcon, Avatar, RightArrowIcon } from 'omorphia'
 import Modal from '~/components/ui/Modal.vue'
 import Chips from '~/components/ui/Chips.vue'
 
@@ -75,6 +180,10 @@ export default {
     CrossIcon,
     CheckIcon,
     Modal,
+    LogInIcon,
+    SearchIcon,
+    Avatar,
+    RightArrowIcon
   },
   props: {
     itemType: {
@@ -98,6 +207,9 @@ export default {
       slug: '',
       description: '',
       manualSlug: false,
+      importing: false,
+      page: 1,
+      selectedProject: null
     }
   },
   methods: {
@@ -205,6 +317,8 @@ export default {
       this.description = ''
       this.manualSlug = false
       this.$refs.modal.show()
+      this.importing = false
+      this.page = 1
     },
     updatedName() {
       if (!this.manualSlug) {
@@ -216,6 +330,12 @@ export default {
           .replaceAll(/--+/gm, '-')
       }
     },
+    beginImport() {
+      this.importing = true
+    },
+    nextPage() {
+      this.page++
+    }
   },
 }
 </script>
@@ -245,6 +365,121 @@ export default {
 
   .input-group {
     margin-top: var(--spacing-card-md);
+
+    .external-btn {
+      flex-grow: 1;
+    }
+  }
+}
+
+.project-card {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: var(--gap-md);
+  border: 1px solid var(--color-button-bg);
+  border-radius: var(--radius-lg);
+
+  .project-text {
+    margin-left: var(--spacing-card-md);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    .title {
+      font-size: var(--font-size-xl);
+      color: var(--color-contrast);
+      font-weight: bold;
+    }
+
+    .description {
+      color: var(--color-text-secondary);
+    }
+  }
+}
+
+.modal-import {
+  padding: var(--spacing-card-bg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-md);
+
+  .text-input-wrapper {
+    width: 100%;
+  }
+
+  textarea {
+    min-height: 5rem;
+  }
+}
+
+.root-project {
+  display: flex;
+  align-items: center;
+  width: 50%;
+  padding: var(--gap-sm);
+  border: 1px solid var(--color-button-bg);
+  border-radius: var(--radius-lg);
+  gap: var(--gap-sm);
+
+  :deep(.avatar) {
+    --size: 4.5rem !important;
+  }
+
+  .title {
+    font-size: var(--font-size-lg);
+    color: var(--color-contrast);
+    font-weight: bold;
+  }
+}
+
+.entry {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  gap: var(--gap-md);
+
+  .entry-text {
+    margin-left: var(--spacing-card-md);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    .title {
+      font-size: var(--font-size-xl);
+      color: var(--color-contrast);
+      font-weight: bold;
+    }
+
+    .description {
+      color: var(--color-text-secondary);
+    }
+  }
+}
+
+.translated-project {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-sm);
+}
+
+.mini-project {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: var(--gap-sm) var(--gap-md);
+  border: 1px solid var(--color-button-bg);
+  border-radius: var(--radius-md);
+  gap: var(--gap-sm);
+
+  .title {
+    font-size: var(--font-size-md);
+    color: var(--color-contrast);
+    font-weight: bold;
+  }
+
+  :deep(.avatar) {
+    --size: 1.5rem !important;
   }
 }
 </style>

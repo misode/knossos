@@ -15,7 +15,6 @@
           <div class="desktop">Date</div>
           <div class="desktop">Status</div>
           <div class="desktop">Amount</div>
-          <div class="mobile">Transaction</div>
         </div>
         <div
           v-for="(payout, index) in payouts.payouts.filter((x) => x.status === 'success')"

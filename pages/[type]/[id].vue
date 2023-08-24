@@ -414,6 +414,13 @@
                 }/versions`,
                 shown: versions.length > 0 || !!currentMember,
               },
+               {
+                label: 'Analytics',
+                href: `/${project.project_type}/${
+                  project.slug ? project.slug : project.id
+                }/analytics`,
+                shown: !!currentMember,
+              },
               {
                 label: 'Moderation',
                 href: `/${project.project_type}/${

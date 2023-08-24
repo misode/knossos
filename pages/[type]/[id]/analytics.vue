@@ -82,7 +82,7 @@ const countryData = ref({
       color: 0x00af5c,
       data: 120,
     },
-    {
+{
       title: 'United Kingdom',
       color: 0x00af5c,
       data: 100,
@@ -180,14 +180,6 @@ const countryData = ref({
       </client-only>
     </div>
   </Card>
-  <Card class="download-data">
-    <div class="title">
-      Monthly downloads
-    </div>
-    <client-only>
-      <BarChart class="bar-graph" :data="downloadData" />
-    </client-only>
-  </Card>
 </template>
 
 <style scoped lang="scss">
@@ -284,22 +276,8 @@ const countryData = ref({
 
 .bar-graph {
   width: 100%;
-  padding: var(--gap-xl);
   background-color: var(--color-bg);
-  border-radius: var(--radius-lg);
-}
-
-.download-data {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
   padding: var(--gap-xl);
-  gap: var(--gap-lg);
-
-  .title {
-    color: var(--color-heading);
-    font-weight: bold;
-    font-size: var(--font-size-lg);
-  }
+  border-radius: var(--radius-lg);
 }
 </style>

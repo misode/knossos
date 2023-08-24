@@ -7,6 +7,9 @@
           <NavStackItem link="/dashboard" label="Overview">
             <DashboardIcon />
           </NavStackItem>
+          <NavStackItem link="/dashboard/analytics" label="Analytics">
+            <NotificationsIcon />
+          </NavStackItem>
           <NavStackItem link="/dashboard/notifications" label="Notifications">
             <NotificationsIcon />
           </NavStackItem>
